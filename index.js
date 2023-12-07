@@ -1,14 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const morgan = require('morgan');
 const config = require('./src/config');
+const morgan = require('morgan');
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
 const socket = require('socket.io');
 
 const app = express();
 const PORT = config.PORT;
+
+
 
 
 app.use(cors());
