@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const config = require('./src/config');
 const authRoutes = require('./src/routes/authRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const socket = require('socket.io');
 
 const app = express();
 const PORT = config.PORT;
@@ -30,6 +31,8 @@ app.get('/auth', (req, res) => {
 app.get('/user', (req, res) => {
     res.send('route user');
 });
+
+
 
 
 
