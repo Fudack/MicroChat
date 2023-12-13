@@ -9,7 +9,7 @@ try {
     const user = await User.findOne({ email });
     console.log('user', user);
     if (user && (await bcrypt.compare(password, user.password))) {
-        const token = jwt.sign({ userId: user._id }, config.jwtSecret, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, config.secret, { expiresIn: '1h' });
         res.status(200).json({ message: 'User logged', token });
     } else {
         console.log('Error en el login');
