@@ -5,12 +5,11 @@ const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
 try {
-    const { name, email, password } = req.body;
+    const {  email, password } = req.body;
     const user = await User.findOne({ email });
-    console.log('user', user);
     if (user && (await bcrypt.compare(password, user.password))) {
         const token = jwt.sign({ userId: user._id }, config.secret, { expiresIn: '1h' });
-        res.status(200).json({ message: 'User logged', token });
+        res.status(200).json({ message: 'User logged', token, user: { id: user._id, name: user.name, email: user.email } });
     } else {
         console.log('Error en el login');
         res.status(401).json({ message: 'Invalid credentials' });
