@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <style>
+        /* Añade aquí tus estilos */
+    </style>
+</head>
+<body>
+    <div id="front"></div>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+        <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const sender = JSON.parse(sessionStorage.getItem('user')) // Reemplaza esto con el nombre del remitente
+        const receiver = JSON.parse(sessionStorage.getItem('receiver')) // Reemplaza esto con el nombre del receptor
+
+        const socket = io({
+            auth: {
+                sender,
+                receiver,
+            }
+        });
+
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        const messages = document.getElementById('messages');
+        const front = document.getElementById('front');
+
+        front.innerHTML = `Para: ${receiver.name}`;
+
+        socket.on('chat messages', (msgs) => {
+            // Limpia los mensajes existentes
+            messages.innerHTML = '';
+
+            // Itera sobre los mensajes y añade cada uno al HTML
+            msgs.forEach(msg => {
+                const item = `<li>
+                <p>${msg.sender}</p>
+                <small>${msg.text}</small>
+                </li>`;
+                messages.insertAdjacentHTML('beforeend', item);
+            })
+
+            // Desplaza la vista hasta el final de los mensajes
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('send message', input.value);
+                input.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

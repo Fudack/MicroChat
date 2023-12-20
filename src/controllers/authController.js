@@ -7,6 +7,7 @@ exports.login = async (req, res) => {
 try {
     const {  email, password } = req.body;
     const user = await User.findOne({ email });
+    console.log(user);
     if (user && (await bcrypt.compare(password, user.password))) {
         const token = jwt.sign({ userId: user._id }, config.secret, { expiresIn: '1h' });
         res.status(200).json({ message: 'User logged', token, user: { id: user._id, name: user.name, email: user.email } });
@@ -20,16 +21,18 @@ try {
 }}
 
 exports.register = async (req, res) => {
-    console.log('register', req.body);
     try {
         const { name, email, password } = req.body;
-        const user = await User.create({ name, email, password });
-        const token = jwt.sign({ userId: user._id }, config.jwtSecret, { expiresIn: '1h' });
-        res.status(201).json({ message: 'User created', token });
-
+        const userExists = await User.findOne({ email });
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }else{
+            const user = await User.create({ name, email, password });
+            const token = jwt.sign({ userId: user._id }, config.secret, { expiresIn: '1h' });
+            res.status(201).json({ message: 'User created', token });
+        }
     } catch (error) {
 
-        console.log('Error en el registro', error);
         res.status(500).json({ error: error.message });
     }
 }

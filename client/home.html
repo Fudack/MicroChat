@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        p {
+            color: #666;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-email {
+            color: #999;
+        }
+    </style>
+    <script>
+        window.onload = function () {
+            const userList = document.getElementById('user-list');
+
+            const token = sessionStorage.getItem('token');
+            
+            const user = JSON.parse(sessionStorage.getItem('user'));
+
+            fetch('/user/all', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(users => {
+                    users.forEach(user_list => {
+                        const listItem = document.createElement('li');
+                        
+
+                        listItem.addEventListener('click', function () {
+                            // Guarda el usuario seleccionado en el almacenamiento local
+                            sessionStorage.setItem('receiver', JSON.stringify(user_list));
+                            // Redirige a la página '/user/:id' con el ID correspondiente al usuario
+                            window.location.href = '/chat/' + user_list._id;
+                        });
+                        
+                        const welcome = document.getElementById('welcome');
+                        welcome.innerHTML = `Hola: ${user.name}!`;
+
+                        const userNameSpan = document.createElement('span');
+                        userNameSpan.className = 'user-name';
+                        userNameSpan.textContent = user_list.name;
+                        listItem.appendChild(userNameSpan);
+
+                        const userEmailSpan = document.createElement('span');
+                        userEmailSpan.className = 'user-email';
+                        userEmailSpan.textContent = user_list.email;
+                        listItem.appendChild(userEmailSpan);
+
+                        userList.appendChild(listItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+
+                document.getElementById('logout').addEventListener('click', function() {
+                    // Elimina el token del almacenamiento local
+                    sessionStorage.removeItem('token');
+                    sessionStorage.removeItem('user');
+                    sessionStorage.removeItem('receiver');
+            
+                    // Redirige al usuario a la página de inicio de sesión
+                    window.location.href = '/login';
+                });
+        };
+    </script>
+</head>
+
+<body>
+    <h1 id="welcome"></h1>
+    <p>This is the home page of our website.</p>
+
+    <h2>User List</h2>
+    <button id="logout">Logout</button>
+    <ul id="user-list">
+    </ul>
+</body>
+
+</html>
