@@ -2,6 +2,14 @@
 <html>
 <head>
     <title>Chat</title>
+    <script>
+        // Comprueba si el usuario está conectado
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            // Redirige al usuario a la página de inicio de sesión
+            window.location.href = '/login';
+        }
+    </script>
     <style>
         /* Añade aquí tus estilos */
     </style>
@@ -24,6 +32,19 @@
             }
         });
 
+        socket.on('connect', () => {
+            console.log('Conectado al servidor');
+        });
+
+        socket.on('disconnect', () => {
+        });
+
+        socket.on('connect_error', (err) => {
+            console.error(err.message);
+        });
+
+
+
         const form = document.getElementById('form');
         const input = document.getElementById('input');
         const messages = document.getElementById('messages');
@@ -31,18 +52,18 @@
 
         front.innerHTML = `Para: ${receiver.name}`;
 
-        socket.on('chat messages', (msgs) => {
+        socket.on('chat messages', (msg) => {
             // Limpia los mensajes existentes
             messages.innerHTML = '';
 
             // Itera sobre los mensajes y añade cada uno al HTML
-            msgs.forEach(msg => {
+            msg.forEach(msg => {
                 const item = `<li>
                 <p>${msg.sender}</p>
                 <small>${msg.text}</small>
                 </li>`;
                 messages.insertAdjacentHTML('beforeend', item);
-            })
+            });
 
             // Desplaza la vista hasta el final de los mensajes
             messages.scrollTop = messages.scrollHeight;

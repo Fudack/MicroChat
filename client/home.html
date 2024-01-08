@@ -3,6 +3,16 @@
 
 <head>
     <title>Home Page</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <script>
+        // Comprueba si el usuario está conectado
+        const token = sessionStorage.getItem('token');
+        if (!token) {
+            // Redirige al usuario a la página de inicio de sesión
+            window.location.href = '/login';
+        }
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
